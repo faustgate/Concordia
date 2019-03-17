@@ -1,0 +1,4 @@
+[
+  {"name": "EC2", "module": "services.EC2"},
+  {"name": "RDS", "module": "services.RDS"}
+]

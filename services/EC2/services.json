@@ -1,0 +1,8 @@
+{
+  "Computing":{
+    "Instances": "services.EC2.instances.instances.EC2Instances"
+  },
+  "Images":{
+    "AMIs": "SomeOtherClass"
+  }
+}
