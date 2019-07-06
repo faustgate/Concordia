@@ -7,6 +7,8 @@ import os
 import json
 import curses
 import boto3
+# from pycallgraph import PyCallGraph
+# from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
 from concordia_aws_service import ConcordiaAWSService
 
@@ -18,6 +20,8 @@ class ConcordiaMain(QMainWindow, main_layout):
         super(ConcordiaMain, self).__init__(parent)
         # self.setMinimumSize(640, 480)
         self.setupUi(self)
+        bar = self.menuBar()
+        bar.setNativeMenuBar(False)
         self.creds_dialog = ConcordiaAWSCredentials()
         self.services = []
         self.region_ids = []
@@ -80,4 +84,5 @@ def main():
 
 
 if __name__ == '__main__':
+    #with PyCallGraph(output=GraphvizOutput()):
     main()

@@ -1,8 +1,13 @@
 {
   "Computing":{
-    "Instances": "services.EC2.instances.instances.EC2Instances"
+    "Instances": "services.EC2.instances.instances.EC2Instances",
+    "Reserved Instances": "services.EC2.reserved_instances.reserved_instances.EC2ReservedInstances"
   },
   "Images":{
-    "AMIs": "SomeOtherClass"
+    "AMIs": "services.EC2.amis.amis.EC2AMIs"
+  },
+  "Elastic Block Store":{
+    "Volumes": "services.EC2.amis.amis.EC2AMIs",
+    "Snapshots": "services.EC2.amis.amis.EC2AMIs"
   }
 }

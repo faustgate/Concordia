@@ -30,8 +30,6 @@ class ConcordiaAWSService(QWidget, splitter_layout):
             for key, val in value.items():
                 child = QTreeWidgetItem()
                 child.setText(0, key)
-                if type(val) == str:
-                    self.treeWidget.currentItemChanged.connect(self.on_click)
                 item.addChild(child)
                 self.fill_side_bar_item(child, val)
         elif type(value) is list:
@@ -55,6 +53,7 @@ class ConcordiaAWSService(QWidget, splitter_layout):
     def fill_side_bar(self, widget, value):
         widget.clear()
         self.fill_side_bar_item(widget.invisibleRootItem(), value)
+        self.treeWidget.currentItemChanged.connect(self.on_click)
 
     def find_component_class(self, tree, component_name):
         for key, value in tree.items():
