@@ -4,12 +4,10 @@ from PyQt5.QtWidgets import *
 
 from PyQt5 import uic
 import os
-import json
-import curses
-import boto3
 # from pycallgraph import PyCallGraph
 # from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
+from concordia_aws_credentials_manager import ConcordiaAWSCredentialsManager
 from concordia_aws_service import ConcordiaAWSService
 
 main_layout = uic.loadUiType("ui/mainwindow.ui")[0]
@@ -23,6 +21,7 @@ class ConcordiaMain(QMainWindow, main_layout):
         bar = self.menuBar()
         bar.setNativeMenuBar(False)
         self.creds_dialog = ConcordiaAWSCredentials()
+        self.creds_manager_dialog = ConcordiaAWSCredentialsManager()
         self.services = []
         self.region_ids = []
         self.region_names = []
@@ -58,6 +57,8 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.regionSelect.currentIndexChanged.connect(self.on_region_changed)
         self.credsSelect.currentIndexChanged.connect(self.on_region_changed)
 
+        self.actionCredentials.triggered.connect(self.show_creds_manager_dialog)
+
         # self.setLayout(self.gridLayout)
 
         self.setWindowTitle("Konkordia")
@@ -74,6 +75,10 @@ class ConcordiaMain(QMainWindow, main_layout):
 
     def close_tab(self, idx):
         self.tabWidget.removeTab(idx)
+
+    def show_creds_manager_dialog(self):
+        self.creds_manager_dialog.exec_()
+
 
 
 def main():

@@ -46,7 +46,7 @@ class EC2Instances(QWidget, main_layout):
         self.btnStop.clicked.connect(self.stop_instances)
         self.btnStart.clicked.connect(self.start_instances)
 
-        self.headers, self.instances = self.get_ec2_instances(aws_creds)
+        self.headers, self.instances = self.get_ec2_instances()
 
         self.fill_in_main_table()
 
@@ -121,7 +121,7 @@ class EC2Instances(QWidget, main_layout):
                 column_pointer += 1
             row_pointer += 1
 
-    def get_ec2_instances(self, aws_creds):
+    def get_ec2_instances(self):
         instances = []
         instance_keys = set()
 
