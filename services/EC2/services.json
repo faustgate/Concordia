@@ -1,13 +1,18 @@
 {
   "Computing":{
-    "Instances": "services.EC2.instances.instances.EC2Instances",
-    "Reserved Instances": "services.EC2.reserved_instances.reserved_instances.EC2ReservedInstances"
+    "Instances": "services.EC2.compute.instances.EC2Instances",
+    "Reserved Instances": "services.EC2.compute.reserved_instances.EC2ReservedInstances"
   },
   "Images":{
     "AMIs": "services.EC2.amis.amis.EC2AMIs"
   },
   "Elastic Block Store":{
-    "Volumes": "services.EC2.amis.amis.EC2AMIs",
-    "Snapshots": "services.EC2.amis.amis.EC2AMIs"
+    "Volumes": "services.EC2.ebs.volumes.EC2EBSVolumes",
+    "Snapshots": "services.EC2.ebs.snapshots.EC2EBSSnapshots"
+  },
+  "Network & Security":{
+    "Security Groups": "services.EC2.amis.amis.EC2AMIs",
+    "Elastic IPs": "services.EC2.amis.amis.EC2AMIs",
+    "Key Pairs": "services.EC2.amis.amis.EC2AMIs"
   }
 }

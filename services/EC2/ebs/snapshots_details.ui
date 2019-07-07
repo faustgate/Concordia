@@ -6,13 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
+    <width>274</width>
     <height>54</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
+    <widget class="QLabel" name="snapshotIdHeader">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>imageID:</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="1">
-    <widget class="QLabel" name="imageStateValue">
+    <widget class="QLabel" name="snapshotStateValue">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -24,7 +36,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="imageStateHeader">
+    <widget class="QLabel" name="snapshotStateHeader">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -36,7 +48,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLabel" name="imageIdValue">
+    <widget class="QLabel" name="snapshotIdValue">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -44,18 +56,6 @@
      </property>
      <property name="text">
       <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="imageIdHeader">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>imageID:</string>
      </property>
     </widget>
    </item>

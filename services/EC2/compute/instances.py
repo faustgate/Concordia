@@ -40,7 +40,7 @@ class EC2Instances(QWidget, main_layout):
 
         # self.layout = QHBoxLayout()
         self.setupUi(self)
-        self.instances_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'details.ui'))
+        self.instances_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'instances_details.ui'))
 
         self.splitter.splitterMoved.connect(self.on_splitter_size_change)
         self.btnStop.clicked.connect(self.stop_instances)

@@ -35,7 +35,7 @@ class EC2ReservedInstances(QWidget, main_layout):
 
         # self.layout = QHBoxLayout()
         self.setupUi(self)
-        self.instances_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'details.ui'))
+        self.instances_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'reserved_instances_details.ui'))
 
         self.headers, self.instances = self.get_ec2_instances(aws_creds)
 
