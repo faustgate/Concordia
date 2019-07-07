@@ -29,7 +29,7 @@ class EC2EBSSnapshots(QWidget, main_layout):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.horizontalHeader().setSectionsMovable(True)
         self.tableWidget.resizeRowsToContents()
-        self.tableWidget.itemClicked.connect(self.print_snapshot_details)
+        self.tableWidget.itemSelectionChanged.connect(self.print_snapshot_details)
 
         self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
 

@@ -32,7 +32,7 @@ class EC2AMIs(QWidget, main_layout):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.horizontalHeader().setSectionsMovable(True)
         self.tableWidget.resizeRowsToContents()
-        self.tableWidget.itemClicked.connect(self.print_image_details)
+        self.tableWidget.itemSelectionChanged.connect(self.print_image_details)
 
         self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
 

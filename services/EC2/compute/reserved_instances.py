@@ -45,7 +45,7 @@ class EC2ReservedInstances(QWidget, main_layout):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.resizeRowsToContents()
         self.tableWidget.horizontalHeader().setSectionsMovable(True)
-        self.tableWidget.itemClicked.connect(self.print_instance_details)
+        self.tableWidget.itemSelectionChanged.connect(self.print_instance_details)
 
         self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
 

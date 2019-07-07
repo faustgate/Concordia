@@ -11,7 +11,7 @@
     "Snapshots": "services.EC2.ebs.snapshots.EC2EBSSnapshots"
   },
   "Network & Security":{
-    "Security Groups": "services.EC2.amis.amis.EC2AMIs",
+    "Security Groups": "services.EC2.network_security.security_groups.EC2SecurityGroups",
     "Elastic IPs": "services.EC2.amis.amis.EC2AMIs",
     "Key Pairs": "services.EC2.amis.amis.EC2AMIs"
   }
