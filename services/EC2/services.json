@@ -13,6 +13,6 @@
   "Network & Security":{
     "Security Groups": "services.EC2.network_security.security_groups.EC2SecurityGroups",
     "Elastic IPs": "services.EC2.network_security.elastic_ips.EC2ElasticIPs",
-    "Key Pairs": "services.EC2.amis.amis.EC2AMIs"
+    "Key Pairs": "services.EC2.network_security.key_pairs.EC2KeyPairs"
   }
 }

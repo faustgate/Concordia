@@ -36,6 +36,8 @@ class EC2ElasticIPs(QWidget, main_layout):
         self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
 
         self.tabWidget.addTab(self.elastic_ips_layout, "Description")
+
+        self.elastic_ips_layout_layout_height = 100
         
         # tbw = QLabel()
         # tbw.setText()
@@ -55,10 +57,12 @@ class EC2ElasticIPs(QWidget, main_layout):
         return headers
 
     def print_elastic_ip_details(self):
-        selected_elastic_ip = self.elastic_ips[self.tableWidget.selectedItems()[0].row()]
-        self.elastic_ips_layout.securityGroupIdValue.setText(selected_elastic_ip['GroupId'])
-        self.print_sg_rules(selected_elastic_ip['IpPermissions'], self.elastic_ips_inbound.tblInboundRules)
-        self.print_sg_rules(selected_elastic_ip['IpPermissionsEgress'], self.elastic_ips_outbound.tblOutboundRules)
+        if len(self.tableWidget.selectedItems()) > 0:
+            self.splitter.setSizes([self.splitter.sizes()[0], self.elastic_ips_layout_layout_height])
+            selected_elastic_ip = self.elastic_ips[self.tableWidget.selectedItems()[0].row()]
+            self.elastic_ips_layout.securityGroupIdValue.setText(selected_elastic_ip['AllocationId'])
+        else:
+            self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
     def print_sg_rules(self, rule_set, out_widget):
         rules_table_headers = ['Protocol', 'Port Range', 'Source']
