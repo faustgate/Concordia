@@ -17,6 +17,6 @@
   },
   "Load Balancing":{
     "Load Balancers": "services.EC2.load_balancing.load_balancers.EC2LoadBalancers",
-    "Target Groups": "services.EC2.ebs.snapshots.EC2EBSSnapshots"
+    "Target Groups": "services.EC2.load_balancing.target_groups.EC2LoadBalancersTargetGroups"
   }
 }
