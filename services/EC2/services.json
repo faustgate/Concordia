@@ -14,5 +14,9 @@
     "Security Groups": "services.EC2.network_security.security_groups.EC2SecurityGroups",
     "Elastic IPs": "services.EC2.network_security.elastic_ips.EC2ElasticIPs",
     "Key Pairs": "services.EC2.network_security.key_pairs.EC2KeyPairs"
+  },
+  "Load Balancing":{
+    "Load Balancers": "services.EC2.load_balancing.load_balancers.EC2LoadBalancers",
+    "Target Groups": "services.EC2.ebs.snapshots.EC2EBSSnapshots"
   }
 }

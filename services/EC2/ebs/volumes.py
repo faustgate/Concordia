@@ -35,6 +35,8 @@ class EC2EBSVolumes(QWidget, main_layout):
 
         self.tabWidget.addTab(self.volumes_layout, "Description")
 
+        self.volumes_layout_height = 100
+
         # tbw = QLabel()
         # tbw.setText()
 
@@ -53,10 +55,14 @@ class EC2EBSVolumes(QWidget, main_layout):
         return headers
 
     def print_volume_details(self):
-        selected_volume = self.volumes[self.tableWidget.selectedItems()[0].row()]
-        self.volumes_layout.volumeIdValue.setText(selected_volume['VolumeId'])
-        self.volumes_layout.volumeStateValue.setText(selected_volume['State'])
-        # print(selected_row)
+        if len(self.tableWidget.selectedItems()) > 0:
+            self.splitter.setSizes([self.splitter.sizes()[0], self.volumes_layout_height])
+            selected_volume = self.volumes[self.tableWidget.selectedItems()[0].row()]
+            self.volumes_layout.volumeIdValue.setText(selected_volume['VolumeId'])
+            self.volumes_layout.volumeStateValue.setText(selected_volume['State'])
+        else:
+            self.splitter.setSizes([self.splitter.sizes()[0], 0])
+            # print(selected_row)
 
     def fill_in_main_table(self):
         self.tableWidget.setRowCount(len(self.volumes))

@@ -42,6 +42,8 @@ class EC2SecurityGroups(QWidget, main_layout):
         self.tabWidget.addTab(self.security_groups_outbound, "Outbound")
         #self.tabWidget.addTab(self.security_groups_layout, "Tags")
 
+        self.security_groups_layout_height = 300
+
         # tbw = QLabel()
         # tbw.setText()
 
@@ -60,10 +62,14 @@ class EC2SecurityGroups(QWidget, main_layout):
         return headers
 
     def print_security_group_details(self):
-        selected_security_group = self.security_groups[self.tableWidget.selectedItems()[0].row()]
-        self.security_groups_layout.securityGroupIdValue.setText(selected_security_group['GroupId'])
-        self.print_sg_rules(selected_security_group['IpPermissions'], self.security_groups_inbound.tblInboundRules)
-        self.print_sg_rules(selected_security_group['IpPermissionsEgress'], self.security_groups_outbound.tblOutboundRules)
+        if len(self.tableWidget.selectedItems()) > 0:
+            self.splitter.setSizes([self.splitter.sizes()[0], self.security_groups_layout_height])
+            selected_security_group = self.security_groups[self.tableWidget.selectedItems()[0].row()]
+            self.security_groups_layout.securityGroupIdValue.setText(selected_security_group['GroupId'])
+            self.print_sg_rules(selected_security_group['IpPermissions'], self.security_groups_inbound.tblInboundRules)
+            self.print_sg_rules(selected_security_group['IpPermissionsEgress'], self.security_groups_outbound.tblOutboundRules)
+        else:
+            self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
     def print_sg_rules(self, rule_set, out_widget):
         rules_table_headers = ['Protocol', 'Port Range', 'Source']

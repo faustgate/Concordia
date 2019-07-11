@@ -35,6 +35,8 @@ class EC2EBSSnapshots(QWidget, main_layout):
 
         self.tabWidget.addTab(self.snapshots_layout, "Description")
 
+        self.snapshots_layout_height = 100
+
         # tbw = QLabel()
         # tbw.setText()
 
@@ -53,9 +55,13 @@ class EC2EBSSnapshots(QWidget, main_layout):
         return headers
 
     def print_snapshot_details(self):
-        selected_snapshot = self.snapshots[self.tableWidget.selectedItems()[0].row()]
-        self.snapshots_layout.snapshotIdValue.setText(selected_snapshot['SnapshotId'])
-        self.snapshots_layout.snapshotStateValue.setText(selected_snapshot['State'])
+        if len(self.tableWidget.selectedItems()) > 0:
+            self.splitter.setSizes([self.splitter.sizes()[0], self.snapshots_layout_height])
+            selected_snapshot = self.snapshots[self.tableWidget.selectedItems()[0].row()]
+            self.snapshots_layout.snapshotIdValue.setText(selected_snapshot['SnapshotId'])
+            self.snapshots_layout.snapshotStateValue.setText(selected_snapshot['State'])
+        else:
+            self.splitter.setSizes([self.splitter.sizes()[0], 0])
         # print(selected_row)
 
     def fill_in_main_table(self):
