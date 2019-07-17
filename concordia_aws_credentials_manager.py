@@ -59,6 +59,7 @@ class ConcordiaAWSCredentialsManager(QDialog, dialog_creds_manager_layout):
                 was_error = True
         if not was_error:
             self.save_creds()
+            self.close()
 
     def on_cancel_button(self):
         self.close()

@@ -18,5 +18,9 @@
   "Load Balancing":{
     "Load Balancers": "services.EC2.load_balancing.load_balancers.EC2LoadBalancers",
     "Target Groups": "services.EC2.load_balancing.target_groups.EC2LoadBalancersTargetGroups"
+  },
+  "Auto Scaling":{
+    "Launch Configurations": "services.EC2.auto_scaling.launch_configurations.EC2LaunchConfigurations",
+    "Auto Scaling Group": "services.EC2.load_balancing.target_groups.EC2LoadBalancersTargetGroups"
   }
 }
