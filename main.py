@@ -1,9 +1,14 @@
 import sys
+
+from PyQt5.QtCore import pyqtSignal
+
 import utils
 from PyQt5.QtWidgets import *
 
 from PyQt5 import uic
 import os
+import threading
+import time
 # from pycallgraph import PyCallGraph
 # from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
@@ -14,8 +19,11 @@ main_layout = uic.loadUiType("ui/mainwindow.ui")[0]
 
 
 class ConcordiaMain(QMainWindow, main_layout):
+    re = pyqtSignal()
+
     def __init__(self, parent=None):
         super(ConcordiaMain, self).__init__(parent)
+        self.progress_bar = QProgressBar()
         # self.setMinimumSize(640, 480)
         self.setupUi(self)
         bar = self.menuBar()
@@ -63,12 +71,15 @@ class ConcordiaMain(QMainWindow, main_layout):
 
         self.setWindowTitle("Konkordia")
 
+        self.refresher = threading.Thread(target=self.refresh_view)
+        self.refresher.start()
+
     def on_region_changed(self):
         cur_creds = self.aws_creds[self.credsSelect.currentIndex()]
         cur_creds['region'] = self.region_ids[self.regionSelect.currentIndex()]
         cur_service = self.services[self.serviceSelect.currentIndex()]
 
-        service = ConcordiaAWSService(cur_service, cur_creds)
+        service = ConcordiaAWSService(cur_service, cur_creds, self.statusbar)
         self.active_services.append(service)
         self.tabWidget.setCurrentIndex(self.tabWidget.addTab(service,
                                                              service.get_name()))
@@ -79,6 +90,14 @@ class ConcordiaMain(QMainWindow, main_layout):
     def show_creds_manager_dialog(self):
         self.creds_manager_dialog.exec_()
 
+    def refresh_view(self):
+        while True:
+            cur_ser_idx = self.tabWidget.currentIndex()
+            if cur_ser_idx >= 0:
+                # self.progress_bar.setVisible(True)
+                self.active_services[cur_ser_idx].refresh_info()
+                # self.progress_bar.setVisible(False)
+                time.sleep(10)
 
 
 def main():

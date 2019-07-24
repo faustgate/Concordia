@@ -1,17 +1,28 @@
+import time
+
 from PyQt5 import uic
-from PyQt5.QtCore import *
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 import os
 import boto3
+import threading
 
 main_layout = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'instances.ui'))[0]
 
 
 class EC2Instances(QWidget, main_layout):
+    data_downloaded = pyqtSignal()
+    show_progressbar = pyqtSignal()
+    hide_progressbar = pyqtSignal()
 
-    def __init__(self, aws_creds, parent=None):
+    def __init__(self, aws_creds, statusbar=None, parent=None):
         super(EC2Instances, self).__init__(parent)
-
+        self.statusbar = statusbar
+        self.progress_bar = QProgressBar()
+        self.initialize_status_bar()
+        self.data_downloaded.connect(self.update_main_table)
+        self.show_progressbar.connect(self.progress_bar.show)
+        self.hide_progressbar.connect(self.progress_bar.hide)
         self.client = boto3.client('ec2',
                                    aws_access_key_id=aws_creds['access_key'],
                                    aws_secret_access_key=aws_creds['secret_key'],
@@ -37,6 +48,9 @@ class EC2Instances(QWidget, main_layout):
                                   'StateReason', 'PublicDnsName', 'Placement',
                                   'ClientToken', 'SourceDestCheck', 'SubnetId',
                                   'CpuOptions', 'Monitoring', 'ProductCodes']
+        self.known_fields = []
+        self.headers = []
+        self.instances = []
 
         # self.layout = QHBoxLayout()
         self.setupUi(self)
@@ -46,13 +60,7 @@ class EC2Instances(QWidget, main_layout):
         self.btnStop.clicked.connect(self.stop_instances)
         self.btnStart.clicked.connect(self.start_instances)
 
-        self.headers, self.instances = self.get_ec2_instances()
-
-        self.fill_in_main_table()
-
         # self.tableView.setModel(tablemodel)
-        self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.resizeRowsToContents()
         self.tableWidget.horizontalHeader().setSectionsMovable(True)
         self.tableWidget.itemSelectionChanged.connect(self.print_instance_details)
 
@@ -60,21 +68,23 @@ class EC2Instances(QWidget, main_layout):
 
         self.tabWidget.addTab(self.instances_layout, "Description")
 
+        self.splitter.setSizes([self.splitter.sizes()[0], 0])
         self.instances_layout_height = 300
+
+        # x = threading.Thread(target=self.refresh_main_table)
+        # x.start()
 
     def on_splitter_size_change(self):
         self.instances_layout_height = self.splitter.sizes()[1]
 
-    def get_table_headers(self):
-        headers = []
-        for header in self.headers:
+    def prepare_headers(self):
+        for header in self.known_fields:
             if header not in self.main_table_fields:
                 self.main_table_fields.append(header)
 
         for header in self.main_table_fields:
-            if header not in self.non_filterable_fields:
-                headers.append(header)
-        return headers
+            if header not in self.non_filterable_fields and header not in self.headers:
+                self.headers.append(header)
 
     def print_instance_details(self):
         if len(self.tableWidget.selectedItems()) > 0:
@@ -105,21 +115,36 @@ class EC2Instances(QWidget, main_layout):
         else:
             self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
-    def fill_in_main_table(self):
+    def update_main_table(self):
+        # self.tableWidget.clear()
+        cur_selected_row = self.tableWidget.currentRow()
+        oldSort = self.tableWidget.horizontalHeader().sortIndicatorSection()
+        oldOrder = self.tableWidget.horizontalHeader().sortIndicatorOrder()
+        self.tableWidget.setSortingEnabled(False)
         self.tableWidget.setRowCount(len(self.instances))
-        table_headers = self.get_table_headers()
-        self.tableWidget.setColumnCount(len(table_headers))
-        self.tableWidget.setHorizontalHeaderLabels(table_headers)
+        self.tableWidget.setColumnCount(len(self.headers))
+        self.tableWidget.setHorizontalHeaderLabels(self.headers)
         row_pointer = 0
         for instance in self.instances:
             column_pointer = 0
-            for header in table_headers:
+            for header in self.headers:
                 item_value = instance[header] if header in instance and header.strip() != '' else '-'
                 self.tableWidget.setItem(row_pointer,
                                          column_pointer,
                                          QTableWidgetItem(item_value))
                 column_pointer += 1
             row_pointer += 1
+        self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.resizeRowsToContents()
+        self.tableWidget.sortItems(0, Qt.DescendingOrder)
+        self.tableWidget.sortItems(oldSort, oldOrder)
+        self.tableWidget.setSortingEnabled(True)
+
+    def refresh_main_table(self):
+        self.show_progressbar.emit()
+        self.get_ec2_instances()
+        self.hide_progressbar.emit()
+        self.data_downloaded.emit()
 
     def get_ec2_instances(self):
         instances = []
@@ -141,8 +166,16 @@ class EC2Instances(QWidget, main_layout):
                     if field not in instance:
                         instance[field] = '-'
                 instance_keys.update(instance.keys())
-                instances.append(instance)
-        return list(instance_keys), instances
+                is_instance_known = False
+                for idx in range(len(instances)):
+                    if instances[idx]['InstanceId'] == instance['InstanceId']:
+                        is_instance_known = True
+                        instances[idx] = instance
+                if not is_instance_known:
+                    instances.append(instance)
+        self.known_fields = list(instance_keys)
+        self.prepare_headers()
+        self.instances = instances
 
     def get_selected_instance_ids(self):
         ids = set()
@@ -157,3 +190,8 @@ class EC2Instances(QWidget, main_layout):
 
     def start_instances(self):
         self.client.start_instances(InstanceIds=self.get_selected_instance_ids())
+
+    def initialize_status_bar(self):
+        self.progress_bar.setRange(0, 0)
+        self.statusbar.addPermanentWidget(self.progress_bar)
+        self.progress_bar.setVisible(False)
