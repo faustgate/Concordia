@@ -9,8 +9,8 @@ from PyQt5 import uic
 import os
 import threading
 import time
-# from pycallgraph import PyCallGraph
-# from pycallgraph.output import GraphvizOutput
+from pycallgraph import PyCallGraph
+from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
 from concordia_aws_credentials_manager import ConcordiaAWSCredentialsManager
 from concordia_aws_service import ConcordiaAWSService
@@ -108,5 +108,5 @@ def main():
 
 
 if __name__ == '__main__':
-    #with PyCallGraph(output=GraphvizOutput()):
-    main()
+    with PyCallGraph(output=GraphvizOutput()):
+        main()

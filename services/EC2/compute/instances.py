@@ -128,7 +128,7 @@ class EC2Instances(QWidget, main_layout):
         for instance in self.instances:
             column_pointer = 0
             for header in self.headers:
-                item_value = instance[header] if header in instance and header.strip() != '' else '-'
+                item_value = str(instance[header]).strip() if header in instance and header.strip() != '' else '-'
                 self.tableWidget.setItem(row_pointer,
                                          column_pointer,
                                          QTableWidgetItem(item_value))
