@@ -9,8 +9,8 @@ from PyQt5 import uic
 import os
 import threading
 import time
-from pycallgraph import PyCallGraph
-from pycallgraph.output import GraphvizOutput
+# from pycallgraph import PyCallGraph
+# from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
 from concordia_aws_credentials_manager import ConcordiaAWSCredentialsManager
 from concordia_aws_service import ConcordiaAWSService
@@ -92,10 +92,10 @@ class ConcordiaMain(QMainWindow, main_layout):
 
     def refresh_view(self):
         while True:
-            cur_ser_idx = self.tabWidget.currentIndex()
-            if cur_ser_idx >= 0:
+            cur_srv_idx = self.tabWidget.currentIndex()
+            if cur_srv_idx >= 0:
                 # self.progress_bar.setVisible(True)
-                self.active_services[cur_ser_idx].refresh_info()
+                self.active_services[cur_srv_idx].refresh_info()
                 # self.progress_bar.setVisible(False)
                 time.sleep(10)
 
@@ -108,5 +108,5 @@ def main():
 
 
 if __name__ == '__main__':
-    with PyCallGraph(output=GraphvizOutput()):
-        main()
+    # with PyCallGraph(output=GraphvizOutput()):
+    main()

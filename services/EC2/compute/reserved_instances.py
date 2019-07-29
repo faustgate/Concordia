@@ -1,109 +1,72 @@
 from PyQt5 import uic
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
 import os
 import boto3
-
-main_layout = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'reserved_instances.ui'))[0]
-
-
-class EC2ReservedInstances(QWidget, main_layout):
-
-    def __init__(self, aws_creds, parent=None):
-        super(EC2ReservedInstances, self).__init__(parent)
-        self.non_filterable_fields = ['CpuOptions', 'SecurityGroups',
-                                      'NetworkInterfaces', 'ProductCodes',
-                                      'BlockDeviceMappings', 'Tags',
-                                      'Monitoring', 'IamInstanceProfile',
-                                      'LaunchTime', 'Placement',
-                                      'CapacityReservationSpecification'
-                                      ]
-
-        self.main_table_fields = ['InstanceName', 'InstanceId', 'State',
-                                  'InstanceType', 'LaunchTime', 'ImageId',
-                                  'VirtualizationType', 'RootDeviceName',
-                                  'RootDeviceType', 'KeyName', 'Architecture',
-                                  'VpcId', 'SecurityGroups', 'PrivateDnsName',
-                                  'AmiLaunchIndex', 'EnaSupport', 'Hypervisor',
-                                  'BlockDeviceMappings', 'EbsOptimized',
-                                  'NetworkInterfaces', 'PrivateIpAddress',
-                                  'StateTransitionReason', 'PublicIpAddress',
-                                  'CapacityReservationSpecification', 'Tags',
-                                  'StateReason', 'PublicDnsName', 'Placement',
-                                  'ClientToken', 'SourceDestCheck', 'SubnetId',
-                                  'CpuOptions', 'Monitoring', 'ProductCodes']
-
-        # self.layout = QHBoxLayout()
-        self.setupUi(self)
-        self.instances_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'reserved_instances_details.ui'))
-
-        self.headers, self.instances = self.get_ec2_instances(aws_creds)
-
-        self.fill_in_main_table()
-
-        # self.tableView.setModel(tablemodel)
-        self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.resizeRowsToContents()
-        self.tableWidget.horizontalHeader().setSectionsMovable(True)
-        self.tableWidget.itemSelectionChanged.connect(self.print_instance_details)
-
-        self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
-
-        self.tabWidget.addTab(self.instances_layout, "Description")
+from concordia_resources_table import ResourcesTable
 
 
-    def get_table_headers(self):
-        headers = []
-        for header in self.headers:
-            if header not in self.main_table_fields:
-                self.main_table_fields.append(header)
+class EC2ReservedInstances(ResourcesTable):
+    data_downloaded = pyqtSignal()
 
-        for header in self.main_table_fields:
-            if header not in self.non_filterable_fields:
-                headers.append(header)
-        return headers
+    def __init__(self, aws_creds, statusbar=None, parent=None):
+        super(EC2ReservedInstances, self).__init__(statusbar, parent)
 
-    def print_instance_details(self):
-        selected_instance = self.instances[self.tableWidget.selectedItems()[0].row()]
-        self.instances_layout.instanceIdValue.setText(selected_instance['InstanceId'])
-        self.instances_layout.instanceStateValue.setText(selected_instance['State'])
-        self.instances_layout.publicDNSValue.setText(selected_instance['PublicDnsName'])
-        self.instances_layout.privateDNSValue.setText(selected_instance['PrivateDnsName'])
-        if 'PublicIpAddress' in selected_instance:
-            self.instances_layout.publicIPValue.setText(selected_instance['PublicIpAddress'])
+        self.client = boto3.client('ec2',
+                                   aws_access_key_id=aws_creds['access_key'],
+                                   aws_secret_access_key=aws_creds['secret_key'],
+                                   region_name=aws_creds['region'])
+
+        self.set_hidden_fields(['CpuOptions', 'SecurityGroups', 'ProductCodes',
+                                'NetworkInterfaces', 'BlockDeviceMappings',
+                                'Tags', 'Monitoring', 'IamInstanceProfile',
+                                'LaunchTime', 'Placement',
+                                'HibernationOptions',
+                                'CapacityReservationSpecification'])
+
+        self.set_main_table_fields(['InstanceName', 'InstanceId', 'State',
+                                    'InstanceType', 'LaunchTime', 'ImageId',
+                                    'VirtualizationType', 'RootDeviceName',
+                                    'RootDeviceType', 'KeyName', 'Hypervisor',
+                                    'Architecture', 'VpcId', 'AmiLaunchIndex',
+                                    'PrivateDnsName', 'EnaSupport', 'SubnetId',
+                                    'EbsOptimized', 'PrivateIpAddress',
+                                    'StateReason', 'PublicIpAddress',
+                                    'StateTransitionReason', 'PublicDnsName', 
+                                    'ClientToken', 'SourceDestCheck', 
+                                    'CpuOptions'])
+
+        self.set_details_layout(os.path.join(os.path.dirname(__file__), 'reserved_instances_details.ui'))
+
+        # self.btnStop.clicked.connect(self.stop_instances)
+        # self.btnStart.clicked.connect(self.start_instances)
+
+        self.refresh_main_table()
+
+    def print_resource_details(self):
+        self.instances_layout.launchTimeValue.setText(self.selected_resource['LaunchTime'])
+        self.instances_layout.instanceIdValue.setText(self.selected_resource['InstanceId'])
+        self.instances_layout.instanceStateValue.setText(self.selected_resource['State'])
+        self.instances_layout.AMIIdValue.setText(self.selected_resource['ImageId'])
+        self.instances_layout.instanceTypeValue.setText(self.selected_resource['InstanceType'])
+        self.instances_layout.stateTransitionReasonValue.setText(self.selected_resource['StateTransitionReason'])
+        self.instances_layout.stateTransitionReasonMessageValue.setText(self.selected_resource['StateReason'])
+        #self.instances_layout.capacityReservationValue.setText(self.selected_resource['CapacityReservationSpecification'])
+
+        self.instances_layout.publicDNSValue.setText(self.selected_resource['PublicDnsName'])
+        self.instances_layout.privateDNSValue.setText(self.selected_resource['PrivateDnsName'])
+        if 'PublicIpAddress' in self.selected_resource:
+            self.instances_layout.publicIPValue.setText(self.selected_resource['PublicIpAddress'])
         else:
             self.instances_layout.publicIPValue.setText("-")
-        self.instances_layout.privateIPValue.setText(selected_instance['PrivateIpAddress'])
-        self.instances_layout.VPCIDValue.setText(selected_instance['VpcId'])
-        self.instances_layout.SubnetIDValue.setText(selected_instance['SubnetId'])
-        self.instances_layout.rootDeviceIdValue.setText(selected_instance['RootDeviceName'])
-        self.instances_layout.rootDeviceTypeValue.setText(selected_instance['RootDeviceType'])
-        # print(selected_row)
+        self.instances_layout.privateIPValue.setText(self.selected_resource['PrivateIpAddress'])
+        self.instances_layout.VPCIDValue.setText(self.selected_resource['VpcId'])
+        self.instances_layout.SubnetIDValue.setText(self.selected_resource['SubnetId'])
+        self.instances_layout.rootDeviceIdValue.setText(self.selected_resource['RootDeviceName'])
+        self.instances_layout.rootDeviceTypeValue.setText(self.selected_resource['RootDeviceType'])
 
-    def fill_in_main_table(self):
-        self.tableWidget.setRowCount(len(self.instances))
-        table_headers = self.get_table_headers()
-        self.tableWidget.setColumnCount(len(table_headers))
-        self.tableWidget.setHorizontalHeaderLabels(table_headers)
-        row_pointer = 0
-        for instance in self.instances:
-            column_pointer = 0
-            for header in table_headers:
-                item_value = instance[header] if header in instance and header.strip() != '' else '-'
-                self.tableWidget.setItem(row_pointer,
-                                         column_pointer,
-                                         QTableWidgetItem(item_value))
-                column_pointer += 1
-            row_pointer += 1
-
-    def get_ec2_instances(self, aws_creds):
+    def get_aws_resources(self):
         instances = []
-        instance_keys = set()
-        client = boto3.client('ec2',
-                              aws_access_key_id=aws_creds['access_key'],
-                              aws_secret_access_key=aws_creds['secret_key'],
-                              region_name=aws_creds['region'])
-        response = client.describe_reserved_instances()
+        response = self.client.describe_reserved_instances()
         for reservation in response['ReservedInstances']:
             for instance in reservation['Instances']:
                 instance['State'] = instance['State']['Name']
@@ -113,6 +76,25 @@ class EC2ReservedInstances(QWidget, main_layout):
                         break
                 if 'StateReason' in instance:
                     instance['StateReason'] = instance['StateReason']['Message']
-                instance_keys.update(instance.keys())
+                if 'LaunchTime' in instance:
+                    instance['LaunchTime'] = '{} UTC'.format(instance['LaunchTime'].strftime("%Y-%m-%d %H:%M:%S"))
+                for field in self.main_table_fields:
+                    if field not in instance:
+                        instance[field] = '-'
+                self.resources_data_keys.update(instance.keys())
                 instances.append(instance)
-        return list(instance_keys), instances
+        self.set_resources_data(instances, 'InstanceId')
+
+    def get_selected_instance_ids(self):
+        ids = set()
+        if len(self.resources_table.selectedItems()) > 0:
+            selected_instances = self.resources_table.selectedItems()
+            for instance in selected_instances:
+                ids.add(self.instances[instance.row()]['InstanceId'])
+            return list(ids)
+
+    def stop_instances(self):
+        self.client.stop_instances(InstanceIds=self.get_selected_instance_ids())
+
+    def start_instances(self):
+        self.client.start_instances(InstanceIds=self.get_selected_instance_ids())

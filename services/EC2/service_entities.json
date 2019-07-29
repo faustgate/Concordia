@@ -21,6 +21,6 @@
   },
   "Auto Scaling":{
     "Launch Configurations": "services.EC2.auto_scaling.launch_configurations.EC2LaunchConfigurations",
-    "Auto Scaling Group": "services.EC2.load_balancing.target_groups.EC2LoadBalancersTargetGroups"
+    "Auto Scaling Group": "services.EC2.auto_scaling.auto_scaling_groups.EC2ASGs"
   }
 }
