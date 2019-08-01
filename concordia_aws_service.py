@@ -1,5 +1,8 @@
 from threading import Thread, Event
 import time
+
+from PySide2.QtCore import QThread, QTimer
+
 import utils
 from PySide2.QtWidgets import *
 
@@ -25,7 +28,10 @@ class ConcordiaAWSService(QWidget, splitter_layout):
         self.fill_side_bar(self.entities_tree_widget, self.service_entities_tree)
         self.entities_tree_widget.currentItemChanged.connect(self.on_new_service_entity_selected)
         self.service_entity = None
-        self.refresher = Thread(target=self.refresh_info)
+        # self.refresher = Thread(target=self.refresh_info)
+        self.refresher = QTimer()
+        self.refresher.timeout.connect(self.refresh_info)
+        self.refresher.setInterval(10000)
         self.shown = Event()
 
     def fill_side_bar_item(self, item, value):
@@ -75,16 +81,14 @@ class ConcordiaAWSService(QWidget, splitter_layout):
                 self.splitter.widget(1).setParent(None)
             self.splitter.insertWidget(1, self.service_entity)
             Thread(target=self.service_entity.refresh_main_table).start()
-            if not self.refresher.is_alive():
+            if not self.refresher.isActive():
                 self.refresher.start()
         except AttributeError:
             pass
 
     def refresh_info(self):
-        while self.shown.is_set():
-            if self.service_entity is not None:
-                self.service_entity.refresh_main_table()
-            time.sleep(10)
+        if self.service_entity is not None:
+            self.service_entity.refresh_main_table()
 
     def get_name(self):
         return "{0} | {1} | {2}".format(self.aws_creds['name'],

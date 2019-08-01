@@ -3,6 +3,7 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import *
 import datetime
 import utils
+PySide2.QtCore.Qt.SortOrder
 
 main_layout = utils.loadUiType('concordia_resources_table.ui')[0]
 
@@ -118,9 +119,13 @@ class ResourcesTable(QWidget, main_layout):
 
     def refresh_main_table(self):
         self.show_progressbar.emit()
+        QApplication.processEvents()
         self.get_aws_resources()
+        QApplication.processEvents()
         self.hide_progressbar.emit()
+        QApplication.processEvents()
         self.data_downloaded.emit()
+        # QApplication.processEvents()
 
     def print_details(self):
         if len(self.resources_table.selectedItems()) > 0:
