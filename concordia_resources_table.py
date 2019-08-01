@@ -1,16 +1,16 @@
 from operator import itemgetter
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5 import uic
+from PySide2 import QtCore
+from PySide2.QtWidgets import *
 import datetime
+import utils
 
-main_layout = uic.loadUiType('concordia_resources_table.ui')[0]
+main_layout = utils.loadUiType('concordia_resources_table.ui')[0]
 
 
 class ResourcesTable(QWidget, main_layout):
-    show_progressbar = pyqtSignal()
-    hide_progressbar = pyqtSignal()
-    data_downloaded = pyqtSignal()
+    show_progressbar = QtCore.Signal()
+    hide_progressbar = QtCore.Signal()
+    data_downloaded = QtCore.Signal()
 
     def __init__(self, statusbar, parent=None):
         super(ResourcesTable, self).__init__(parent)
@@ -131,5 +131,5 @@ class ResourcesTable(QWidget, main_layout):
             self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
     def set_details_layout(self, details_layout_file):
-        self.details_layout = uic.loadUi(details_layout_file)
+        self.details_layout = utils.load_ui_file(details_layout_file)
         self.tabWidget.addTab(self.details_layout, "Description")

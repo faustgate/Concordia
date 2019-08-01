@@ -1,20 +1,18 @@
 import sys
 import utils
-from PyQt5.QtWidgets import *
+from PySide2.QtWidgets import *
 
-from PyQt5 import uic
 import os
 import json
 import curses
 import boto3
 
-
-dialog_creds_layout = uic.loadUiType("ui/creds.ui")[0]
+dialog_creds_layout = utils.loadUiType("ui/creds.ui")[0]
 
 
 class ConcordiaAWSCredentials(QDialog, dialog_creds_layout):
     def __init__(self, parent=None):
-        super(QDialog, self).__init__(parent)
+        super(ConcordiaAWSCredentials, self).__init__(parent)
         self.setupUi(self)
 
         self.buttons.accepted.connect(self.on_ok_button)

@@ -1,12 +1,9 @@
-from PyQt5.QtCore import *
 import os
 import boto3
 from concordia_resources_table import ResourcesTable
 
 
 class EC2EBSSnapshots(ResourcesTable):
-    data_downloaded = pyqtSignal()
-
     def __init__(self, aws_creds, statusbar=None, parent=None):
         super(EC2EBSSnapshots, self).__init__(statusbar, parent)
 

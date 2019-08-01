@@ -1,2 +1,2 @@
 boto3
-pyQT5
+PySide2

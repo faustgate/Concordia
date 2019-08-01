@@ -1,24 +1,20 @@
 import sys
 
-from PyQt5.uic.properties import QtCore
-
 import utils
-from PyQt5.QtWidgets import *
+from PySide2.QtWidgets import *
 
-from PyQt5 import uic, QtGui
 import os
 import json
-import curses
 import boto3
 
 from concordia_aws_credentials import ConcordiaAWSCredentials
 
-dialog_creds_manager_layout = uic.loadUiType("ui/creds_manager.ui")[0]
+dialog_creds_manager_layout = utils.loadUiType("ui/creds_manager.ui")[0]
 
 
 class ConcordiaAWSCredentialsManager(QDialog, dialog_creds_manager_layout):
     def __init__(self, parent=None):
-        super(QDialog, self).__init__(parent)
+        super(ConcordiaAWSCredentialsManager, self).__init__(parent)
         self.setupUi(self)
 
         self.creds_dialog = ConcordiaAWSCredentials()

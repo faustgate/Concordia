@@ -1,13 +1,12 @@
 from threading import Thread, Event
 import time
 import utils
-from PyQt5.QtWidgets import *
+from PySide2.QtWidgets import *
 
-from PyQt5 import uic
 import os
 import json
 
-splitter_layout = uic.loadUiType('ui/splitter.ui')[0]
+splitter_layout = utils.loadUiType('ui/splitter.ui')[0]
 
 
 class Found(Exception):

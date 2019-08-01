@@ -1,16 +1,15 @@
 import sys
 import utils
-from PyQt5.QtWidgets import *
-
-from PyQt5 import uic
+from PySide2.QtWidgets import *
 import os
+
 # from pycallgraph import PyCallGraph
 # from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
 from concordia_aws_credentials_manager import ConcordiaAWSCredentialsManager
 from concordia_aws_service import ConcordiaAWSService
 
-main_layout = uic.loadUiType("ui/mainwindow.ui")[0]
+main_layout = utils.loadUiType("ui/mainwindow.ui")[0]
 
 
 class ConcordiaMain(QMainWindow, main_layout):
