@@ -3,7 +3,6 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import *
 import datetime
 import utils
-PySide2.QtCore.Qt.SortOrder
 
 main_layout = utils.loadUiType('concordia_resources_table.ui')[0]
 
