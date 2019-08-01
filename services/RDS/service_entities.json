@@ -1,6 +1,6 @@
 {
   "Computing":{
-    "Instances": "services.RDS.instances.instances.RDSInstances"
+    "Instances": "services.RDS.compute.instances.RDSInstances"
   },
   "Images":{
     "AMIs": "SomeOtherClass"

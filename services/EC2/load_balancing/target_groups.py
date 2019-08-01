@@ -1,5 +1,4 @@
 from PyQt5 import uic
-from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import os
 import boto3
@@ -30,8 +29,6 @@ class EC2LoadBalancersTargetGroups(ResourcesTable):
         self.target_groups_targets_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'target_groups_targets.ui'))
         self.tabWidget.addTab(self.target_groups_targets_layout, "Targets")
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.print_target_group_targets(self.selected_resource['TargetGroupArn'])
         self.details_layout.target_groupIdValue.setText(self.selected_resource['TargetGroupArn'])
@@ -61,9 +58,5 @@ class EC2LoadBalancersTargetGroups(ResourcesTable):
         self.target_groups_targets_layout.tblTargets.resizeColumnsToContents()
 
     def get_aws_resources(self):
-        target_groups = []
         response = self.client.describe_target_groups()
-        for target_group in response['TargetGroups']:
-            self.resources_data_keys.update(target_group.keys())
-            target_groups.append(target_group)
-        self.set_resources_data(target_groups, 'TargetGroupArn')
+        self.set_resources_data(response['TargetGroups'], 'TargetGroupArn')

@@ -1,4 +1,3 @@
-from PyQt5 import uic
 from PyQt5.QtCore import *
 import os
 import boto3
@@ -40,8 +39,6 @@ class EC2ReservedInstances(ResourcesTable):
         # self.btnStop.clicked.connect(self.stop_instances)
         # self.btnStart.clicked.connect(self.start_instances)
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.instances_layout.launchTimeValue.setText(self.selected_resource['LaunchTime'])
         self.instances_layout.instanceIdValue.setText(self.selected_resource['InstanceId'])
@@ -76,12 +73,6 @@ class EC2ReservedInstances(ResourcesTable):
                         break
                 if 'StateReason' in instance:
                     instance['StateReason'] = instance['StateReason']['Message']
-                if 'LaunchTime' in instance:
-                    instance['LaunchTime'] = '{} UTC'.format(instance['LaunchTime'].strftime("%Y-%m-%d %H:%M:%S"))
-                for field in self.main_table_fields:
-                    if field not in instance:
-                        instance[field] = '-'
-                self.resources_data_keys.update(instance.keys())
                 instances.append(instance)
         self.set_resources_data(instances, 'InstanceId')
 

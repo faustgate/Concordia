@@ -1,4 +1,3 @@
-from PyQt5 import uic
 from PyQt5.QtCore import *
 import os
 import boto3
@@ -24,16 +23,10 @@ class EC2EBSSnapshots(ResourcesTable):
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'snapshots_details.ui'))
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.details_layout.snapshotIdValue.setText(self.selected_resource['SnapshotId'])
         self.details_layout.snapshotStateValue.setText(self.selected_resource['State'])
 
     def get_aws_resources(self):
-        snapshots = []
         response = self.client.describe_snapshots(OwnerIds=['self'])
-        for snapshot in response['Snapshots']:
-            self.resources_data_keys.update(snapshot.keys())
-            snapshots.append(snapshot)
-        self.set_resources_data(snapshots, 'SnapshotId')
+        self.set_resources_data(response['Snapshots'], 'SnapshotId')

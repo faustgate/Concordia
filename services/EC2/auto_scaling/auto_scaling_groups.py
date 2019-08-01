@@ -1,5 +1,3 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import *
 import os
 import boto3
 from concordia_resources_table import ResourcesTable
@@ -30,15 +28,9 @@ class EC2ASGs(ResourcesTable):
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'auto_scaling_groups_details.ui'))
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.details_layout.auto_scaling_groupIdValue.setText(self.selected_resource['AutoScalingGroupName'])
 
     def get_aws_resources(self):
-        auto_scaling_groups = []
         response = self.client.describe_auto_scaling_groups()
-        for auto_scaling_group in response['AutoScalingGroups']:
-            self.resources_data_keys.update(auto_scaling_group.keys())
-            auto_scaling_groups.append(auto_scaling_group)
-        self.set_resources_data(auto_scaling_groups, 'AutoScalingGroupARN')
+        self.set_resources_data(response['AutoScalingGroups'], 'AutoScalingGroupARN')

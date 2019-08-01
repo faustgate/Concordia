@@ -1,5 +1,4 @@
 from PyQt5 import uic
-from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import os
 import boto3
@@ -25,8 +24,6 @@ class EC2LoadBalancers(ResourcesTable):
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'load_balancers_details.ui'))
         self.load_balancers_listeners_layout = uic.loadUi(os.path.join(os.path.dirname(__file__), 'load_balancers_listeners.ui'))
         self.tabWidget.addTab(self.load_balancers_listeners_layout, "Listeners")
-
-        self.refresh_main_table()
 
     def print_resource_details(self):
         self.print_load_balancer_listeners(self.selected_resource['LoadBalancerArn'])
@@ -73,9 +70,5 @@ class EC2LoadBalancers(ResourcesTable):
             row_pointer += 1
 
     def get_aws_resources(self):
-        load_balancers = []
         response = self.client.describe_load_balancers()
-        for load_balancer in response['LoadBalancers']:
-            self.resources_data_keys.update(load_balancer.keys())
-            load_balancers.append(load_balancer)
-        self.set_resources_data(load_balancers, 'LoadBalancerArn')
+        self.set_resources_data(response['LoadBalancers'], 'LoadBalancerArn')

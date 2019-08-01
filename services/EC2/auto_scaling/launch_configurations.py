@@ -1,5 +1,3 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import *
 import os
 import boto3
 from concordia_resources_table import ResourcesTable
@@ -23,15 +21,9 @@ class EC2LaunchConfigurations(ResourcesTable):
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'launch_configurations_details.ui'))
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.details_layout.launch_configurationIdValue.setText(self.selected_resource['LaunchConfigurationName'])
 
     def get_aws_resources(self):
-        launch_configurations = []
         response = self.client.describe_launch_configurations()
-        for launch_configuration in response['LaunchConfigurations']:
-            self.resources_data_keys.update(launch_configuration.keys())
-            launch_configurations.append(launch_configuration)
-        self.set_resources_data(launch_configurations, 'LaunchConfigurationARN')
+        self.set_resources_data(response['LaunchConfigurations'], 'LaunchConfigurationARN')

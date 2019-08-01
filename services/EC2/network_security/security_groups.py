@@ -1,5 +1,4 @@
 from PyQt5 import uic
-from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import os
 import boto3
@@ -25,8 +24,6 @@ class EC2SecurityGroups(ResourcesTable):
         self.security_groups_outbound = uic.loadUi(os.path.join(os.path.dirname(__file__), 'security_groups_outbound.ui'))
         self.tabWidget.addTab(self.security_groups_inbound, "Inbound")
         self.tabWidget.addTab(self.security_groups_outbound, "Outbound")
-
-        self.refresh_main_table()
 
     def print_resource_details(self):
         self.details_layout.securityGroupIdValue.setText(self.selected_resource['GroupId'])
@@ -69,9 +66,5 @@ class EC2SecurityGroups(ResourcesTable):
             row_pointer += 1
 
     def get_aws_resources(self):
-        security_groups = []
         response = self.client.describe_security_groups()
-        for security_group in response['SecurityGroups']:
-            self.resources_data_keys.update(security_group.keys())
-            security_groups.append(security_group)
-        self.set_resources_data(security_groups, 'GroupId')
+        self.set_resources_data(response['SecurityGroups'], 'GroupId')

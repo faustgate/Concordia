@@ -1,8 +1,8 @@
-import os
 from operator import itemgetter
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
+import datetime
 
 main_layout = uic.loadUiType('concordia_resources_table.ui')[0]
 
@@ -29,21 +29,33 @@ class ResourcesTable(QWidget, main_layout):
         self.main_table_fields = []
         self.show_progressbar.connect(self.progress_bar.show)
         self.hide_progressbar.connect(self.progress_bar.hide)
+        self.data_downloaded.connect(self.update_main_table)
         self.splitter.splitterMoved.connect(self.on_splitter_size_change)
         self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
         self.splitter.setSizes([self.splitter.sizes()[0], 0])
         self.details_layout = None
         self.details_layout_height = 300
         self.resources_table.itemSelectionChanged.connect(self.print_details)
-        self.data_downloaded.connect(self.update_main_table)
         self.selected_resource = None
+        self.sort_field_id = 0
 
     def on_splitter_size_change(self):
         self.details_layout_height = self.splitter.sizes()[1]
 
-    def set_resources_data(self, resources_data, id_field):
+    def set_resources_data(self, resources_data, id_field, keys_cache_key=None):
+        for resource in resources_data:
+            for key in resource:
+                if key not in self.main_table_fields:
+                    self.main_table_fields.append(key)
+                if type(resource[key]) == datetime.datetime:
+                    resource[key] = resource[key].strftime("%Y-%m-%d %H:%M:%S UTC")
+
         for resource in resources_data:
             is_resource_known = False
+            for key in self.main_table_fields:
+                if key not in resource:
+                    resource[key] = '-'
+
             for idx in range(len(self.resources_data)):
                 if self.resources_data[idx][id_field] == resource[id_field]:
                     is_resource_known = True
@@ -70,7 +82,11 @@ class ResourcesTable(QWidget, main_layout):
     def resort_table(self):
         tbl_horizontal_header = self.resources_table.horizontalHeader()
         srt_fld_id = tbl_horizontal_header.sortIndicatorSection()
-        self.reverse = not self.reverse
+        if srt_fld_id != self.sort_field_id:
+            self.reverse = False
+        else:
+            self.reverse = not self.reverse
+        self.sort_field_id = srt_fld_id
         sort_field = self.headers[srt_fld_id]
         self.resources_data.sort(key=itemgetter(sort_field), reverse=self.reverse)
         tbl_horizontal_header.setSortIndicator(srt_fld_id, int(self.reverse))
@@ -87,8 +103,8 @@ class ResourcesTable(QWidget, main_layout):
             for header in self.headers:
                 item_value = str(resource[header]).strip() if header in resource and header.strip() != '' else '-'
                 self.resources_table.setItem(row_pointer,
-                                         column_pointer,
-                                         QTableWidgetItem(item_value))
+                                             column_pointer,
+                                             QTableWidgetItem(item_value))
                 column_pointer += 1
             row_pointer += 1
         self.resources_table.resizeColumnsToContents()

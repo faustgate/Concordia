@@ -1,14 +1,9 @@
 import sys
-
-from PyQt5.QtCore import pyqtSignal
-
 import utils
 from PyQt5.QtWidgets import *
 
 from PyQt5 import uic
 import os
-import threading
-import time
 # from pycallgraph import PyCallGraph
 # from pycallgraph.output import GraphvizOutput
 from concordia_aws_credentials import ConcordiaAWSCredentials
@@ -19,12 +14,8 @@ main_layout = uic.loadUiType("ui/mainwindow.ui")[0]
 
 
 class ConcordiaMain(QMainWindow, main_layout):
-    re = pyqtSignal()
-
     def __init__(self, parent=None):
         super(ConcordiaMain, self).__init__(parent)
-        self.progress_bar = QProgressBar()
-        # self.setMinimumSize(640, 480)
         self.setupUi(self)
         bar = self.menuBar()
         bar.setNativeMenuBar(False)
@@ -35,8 +26,10 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.region_names = []
         self.service_names = []
         self.active_services = []
+        self.current_tab_index = -1
 
         self.tabWidget.tabCloseRequested.connect(self.close_tab)
+        self.tabWidget.currentChanged.connect(self.on_tab_changed)
 
         while True:
             self.aws_creds = self.creds_dialog.get_saved_creds()
@@ -67,12 +60,7 @@ class ConcordiaMain(QMainWindow, main_layout):
 
         self.actionCredentials.triggered.connect(self.show_creds_manager_dialog)
 
-        # self.setLayout(self.gridLayout)
-
         self.setWindowTitle("Konkordia")
-
-        self.refresher = threading.Thread(target=self.refresh_view)
-        self.refresher.start()
 
     def on_region_changed(self):
         cur_creds = self.aws_creds[self.credsSelect.currentIndex()]
@@ -90,14 +78,10 @@ class ConcordiaMain(QMainWindow, main_layout):
     def show_creds_manager_dialog(self):
         self.creds_manager_dialog.exec_()
 
-    def refresh_view(self):
-        while True:
-            cur_srv_idx = self.tabWidget.currentIndex()
-            if cur_srv_idx >= 0:
-                # self.progress_bar.setVisible(True)
-                self.active_services[cur_srv_idx].refresh_info()
-                # self.progress_bar.setVisible(False)
-                time.sleep(10)
+    def on_tab_changed(self, new_tab_index):
+        self.active_services[self.current_tab_index].set_shown(False)
+        self.active_services[new_tab_index].set_shown(True)
+        self.current_tab_index = new_tab_index
 
 
 def main():

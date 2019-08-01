@@ -1,4 +1,3 @@
-from PyQt5 import uic
 import os
 import boto3
 from concordia_resources_table import ResourcesTable
@@ -23,15 +22,9 @@ class EC2ElasticIPs(ResourcesTable):
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'elastic_ips_details.ui'))
 
-        self.refresh_main_table()
-
     def print_resource_details(self):
         self.details_layout.securityGroupIdValue.setText(self.selected_resource['AllocationId'])
         
     def get_aws_resources(self):
-        elastic_ips = []
         response = self.client.describe_addresses()
-        for elastic_ip in response['Addresses']:
-            self.resources_data_keys.update(elastic_ip.keys())
-            elastic_ips.append(elastic_ip)
-        self.set_resources_data(elastic_ips, 'AllocationId')
+        self.set_resources_data(response['Addresses'], 'AllocationId')
