@@ -11,20 +11,18 @@ class EC2ASGs(ResourcesTable):
                                    aws_access_key_id=aws_creds['access_key'],
                                    aws_secret_access_key=aws_creds['secret_key'],
                                    region_name=aws_creds['region'])
-        self.set_hidden_fields(['AvailabilityZones', 'LoadBalancerNames',
-                                'TargetGroupARNs', 'Instances', 'CreatedTime',
-                                'SuspendedProcesses', 'EnabledMetrics', 'Tags',
-                                'TerminationPolicies', ])
+        self.set_hidden_fields(['Instances', 'Tags', 'EnabledMetrics'])
 
         self.set_main_table_fields(['AutoScalingGroupName', 'MinSize',
                                     'DesiredCapacity', 'MaxSize',
                                     'LaunchConfigurationName',
                                     'AutoScalingGroupARN', 'DefaultCooldown',
-                                    'HealthCheckType',
-                                    'HealthCheckGracePeriod',
-                                    'VPCZoneIdentifier',
+                                    'HealthCheckType', 'AvailabilityZones',
+                                    'HealthCheckGracePeriod', 'EnabledMetrics',
+                                    'VPCZoneIdentifier', 'SuspendedProcesses',
                                     'NewInstancesProtectedFromScaleIn',
-                                    'ServiceLinkedRoleARN'])
+                                    'ServiceLinkedRoleARN', 'LoadBalancerNames',
+                                    'TargetGroupARNs', 'TerminationPolicies'])
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'auto_scaling_groups_details.ui'))
 
@@ -32,5 +30,11 @@ class EC2ASGs(ResourcesTable):
         self.details_layout.auto_scaling_groupIdValue.setText(self.selected_resource['AutoScalingGroupName'])
 
     def get_aws_resources(self):
-        response = self.client.describe_auto_scaling_groups()
-        self.set_resources_data(response['AutoScalingGroups'], 'AutoScalingGroupARN')
+        asgs = self.client.describe_auto_scaling_groups()['AutoScalingGroups']
+        for asg in asgs:
+            for header in ['AvailabilityZones', 'LoadBalancerNames',
+                           'TargetGroupARNs', 'SuspendedProcesses',
+                           'TerminationPolicies']:
+                if header in asg:
+                    asg[header] = ','.join(asg[header])
+        self.set_resources_data(asgs, 'AutoScalingGroupARN')

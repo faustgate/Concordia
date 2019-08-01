@@ -14,12 +14,12 @@ class EC2AMIs(ResourcesTable):
 
         self.set_hidden_fields(['BlockDeviceMappings', 'Tags'])
 
-        self.set_main_table_fields(['Name', 'ImageId', 'State', 'ImageLocation',
-                                    'Hypervisor', 'Description', 'RootDeviceName',
-                                    'VirtualizationType', 'Tags', 'Architecture',
-                                    'ImageType', 'Public', 'BlockDeviceMappings',
-                                    'EnaSupport', 'RootDeviceType', 'OwnerId',
-                                    'CreationDate', 'SriovNetSupport'])
+        self.set_main_table_fields(['Name', 'ImageId', 'State', 'Public',
+                                    'ImageLocation', 'Hypervisor', 'OwnerId',
+                                    'Description', 'RootDeviceName',
+                                    'VirtualizationType', 'Architecture',
+                                    'ImageType', 'EnaSupport', 'CreationDate',
+                                    'RootDeviceType', 'SriovNetSupport'])
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'details.ui'))
 

@@ -1,4 +1,4 @@
-import threading
+from threading import Thread, Event
 import time
 import utils
 from PyQt5.QtWidgets import *
@@ -26,8 +26,8 @@ class ConcordiaAWSService(QWidget, splitter_layout):
         self.fill_side_bar(self.entities_tree_widget, self.service_entities_tree)
         self.entities_tree_widget.currentItemChanged.connect(self.on_new_service_entity_selected)
         self.service_entity = None
-        self.refresher = threading.Thread(target=self.refresh_info)
-        self.shown = False
+        self.refresher = Thread(target=self.refresh_info)
+        self.shown = Event()
 
     def fill_side_bar_item(self, item, value):
         item.setExpanded(True)
@@ -75,14 +75,14 @@ class ConcordiaAWSService(QWidget, splitter_layout):
             if self.splitter.widget(1) is not None:
                 self.splitter.widget(1).setParent(None)
             self.splitter.insertWidget(1, self.service_entity)
-            threading.Thread(target=self.service_entity.refresh_main_table).start()
+            Thread(target=self.service_entity.refresh_main_table).start()
             if not self.refresher.is_alive():
                 self.refresher.start()
         except AttributeError:
             pass
 
     def refresh_info(self):
-        while self.shown:
+        while self.shown.is_set():
             if self.service_entity is not None:
                 self.service_entity.refresh_main_table()
             time.sleep(10)
@@ -99,4 +99,7 @@ class ConcordiaAWSService(QWidget, splitter_layout):
         return service_entities_tree
 
     def set_shown(self, is_shown=False):
-        self.shown = is_shown
+        if is_shown:
+            self.shown.set()
+        else:
+            self.shown.clear()

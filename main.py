@@ -83,6 +83,11 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.active_services[new_tab_index].set_shown(True)
         self.current_tab_index = new_tab_index
 
+    def closeEvent(self, event):
+        cur_tab_num = self.tabWidget.currentIndex()
+        if cur_tab_num > -1:
+            self.active_services[cur_tab_num].set_shown(False)
+
 
 def main():
     app = QApplication(sys.argv)
