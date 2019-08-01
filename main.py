@@ -71,6 +71,10 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.active_services.append(service)
         self.tabWidget.setCurrentIndex(self.tabWidget.addTab(service,
                                                              service.get_name()))
+        service.name_changed.connect(self.on_service_name_changed)
+
+    def on_service_name_changed(self, new_name):
+        self.tabWidget.setTabText(self.tabWidget.currentIndex(), new_name)
 
     def close_tab(self, idx):
         self.tabWidget.removeTab(idx)
@@ -79,14 +83,9 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.creds_manager_dialog.exec_()
 
     def on_tab_changed(self, new_tab_index):
-        self.active_services[self.current_tab_index].set_shown(False)
-        self.active_services[new_tab_index].set_shown(True)
+        self.active_services[self.current_tab_index].stop_refresher()
+        self.active_services[new_tab_index].start_refresher()
         self.current_tab_index = new_tab_index
-
-    def closeEvent(self, event):
-        cur_tab_num = self.tabWidget.currentIndex()
-        if cur_tab_num > -1:
-            self.active_services[cur_tab_num].set_shown(False)
 
 
 def main():

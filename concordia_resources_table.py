@@ -31,13 +31,14 @@ class ResourcesTable(QWidget, main_layout):
         self.hide_progressbar.connect(self.progress_bar.hide)
         self.data_downloaded.connect(self.update_main_table)
         self.splitter.splitterMoved.connect(self.on_splitter_size_change)
-        self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
+        # self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
         self.splitter.setSizes([self.splitter.sizes()[0], 0])
         self.details_layout = None
         self.details_layout_height = 300
         self.resources_table.itemSelectionChanged.connect(self.print_details)
         self.selected_resource = None
         self.sort_field_id = 0
+        self.tag_table = None
 
     def on_splitter_size_change(self):
         self.details_layout_height = self.splitter.sizes()[1]
@@ -122,14 +123,37 @@ class ResourcesTable(QWidget, main_layout):
         self.hide_progressbar.emit()
         self.data_downloaded.emit()
 
+    def print_tags(self):
+        if self.tag_table is None:
+            self.tag_table = QTableWidget()
+            self.tabWidget.addTab(self.tag_table, "Tags")
+        self.tag_table.setColumnCount(2)
+        self.tag_table.setHorizontalHeaderLabels(['Key', 'Value'])
+        self.tag_table.setRowCount(len(self.selected_resource['Tags']))
+        row_ptr = 0
+        self.tag_table.setSortingEnabled(False)
+        for tag in self.selected_resource['Tags']:
+            self.tag_table.setItem(row_ptr, 0, QTableWidgetItem(tag['Key']))
+            self.tag_table.setItem(row_ptr, 1, QTableWidgetItem(tag['Value']))
+            row_ptr += 1
+        self.tag_table.resizeColumnsToContents()
+        self.tag_table.setSortingEnabled(True)
+        self.tag_table.sortItems(0, Qt.AscendingOrder)
+
     def print_details(self):
         if len(self.resources_table.selectedItems()) > 0:
-            self.splitter.setSizes([self.splitter.sizes()[0], self.details_layout_height])
+            self.splitter.setSizes([self.details_layout_height, self.details_layout_height])
             self.selected_resource = self.resources_data[self.resources_table.selectedItems()[0].row()]
             self.print_resource_details()
+            if 'Tags' in self.selected_resource:
+                self.print_tags()
         else:
             self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
     def set_details_layout(self, details_layout_file):
         self.details_layout = uic.loadUi(details_layout_file)
-        self.tabWidget.addTab(self.details_layout, "Description")
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(self.details_layout)
+        self.tabWidget.addTab(scroll_area, "Description")
+        self.tabWidget.setMaximumHeight(self.details_layout.maximumHeight())
