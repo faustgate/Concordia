@@ -141,19 +141,21 @@ class ResourcesTable(QWidget, main_layout):
         self.tag_table.sortItems(0, Qt.AscendingOrder)
 
     def print_details(self):
-        if len(self.resources_table.selectedItems()) > 0:
+        if len(self.resources_table.selectedItems()) in range(0, len(self.resources_data[0])):
             self.splitter.setSizes([self.details_layout_height, self.details_layout_height])
             self.selected_resource = self.resources_data[self.resources_table.selectedItems()[0].row()]
             self.print_resource_details()
-            if 'Tags' in self.selected_resource:
+            if 'Tags' in self.selected_resource and type(self.selected_resource['Tags']) == list:
                 self.print_tags()
         else:
             self.splitter.setSizes([self.splitter.sizes()[0], 0])
 
     def set_details_layout(self, details_layout_file):
         self.details_layout = uic.loadUi(details_layout_file)
+        widget_height = self.details_layout.size().height()
         scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(self.details_layout)
+        scroll_area.setWidgetResizable(True)
         self.tabWidget.addTab(scroll_area, "Description")
-        self.tabWidget.setMaximumHeight(self.details_layout.maximumHeight())
+        tab_header_height = self.tabWidget.tabBar().size().height()
+        self.tabWidget.setMaximumHeight(widget_height + tab_header_height * 2)
