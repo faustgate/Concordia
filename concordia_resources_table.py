@@ -34,6 +34,7 @@ class ResourcesTable(QWidget, main_layout):
         # self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
         self.splitter.setSizes([self.splitter.sizes()[0], 0])
         self.details_layout = None
+        self.controls_layout = None
         self.splitter_sizes = []
         self.resources_table.itemSelectionChanged.connect(self.print_details)
         self.selected_resource = None
@@ -162,3 +163,7 @@ class ResourcesTable(QWidget, main_layout):
         scroll_area.setWidgetResizable(True)
         self.tabWidget.addTab(scroll_area, "Description")
         self.tabWidget.setMaximumHeight(tab_widget_height)
+
+    def set_controls_layout(self, controls_layout_file):
+        self.controls_layout = uic.loadUi(controls_layout_file)
+        self.resources_actions_bar.addWidget(self.controls_layout)
