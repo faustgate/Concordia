@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
-    <height>42</height>
+    <width>525</width>
+    <height>79</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,19 +59,6 @@
       <string>Stop</string>
      </property>
     </widget>
-   </item>
-   <item row="0" column="5">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
   <action name="actionNetworking">
