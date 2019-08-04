@@ -1,6 +1,8 @@
 from PyQt5.QtCore import *
 import os
 import boto3
+from PyQt5.QtWidgets import QPushButton, QToolButton, QAction, QMenu
+
 from concordia_resources_table import ResourcesTable
 
 
@@ -33,9 +35,7 @@ class EC2Instances(ResourcesTable):
                                     'SourceDestCheck', 'CpuOptions'])
 
         self.set_details_layout(os.path.join(os.path.dirname(__file__), 'instances_details.ui'))
-
-        # self.btnStop.clicked.connect(self.stop_instances)
-        # self.btnStart.clicked.connect(self.start_instances)
+        self.generate_controls()
 
     def print_resource_details(self):
         self.details_layout.launchTimeValue.setText(self.selected_resource['LaunchTime'])
@@ -75,10 +75,10 @@ class EC2Instances(ResourcesTable):
 
     def get_selected_instance_ids(self):
         ids = set()
-        if len(self.tableWidget.selectedItems()) > 0:
-            selected_instances = self.tableWidget.selectedItems()
+        if len(self.resources_table.selectedItems()) > 0:
+            selected_instances = self.resources_table.selectedItems()
             for instance in selected_instances:
-                ids.add(self.instances[instance.row()]['InstanceId'])
+                ids.add(self.resources_data[instance.row()]['InstanceId'])
             return list(ids)
 
     def stop_instances(self):
@@ -86,3 +86,39 @@ class EC2Instances(ResourcesTable):
 
     def start_instances(self):
         self.client.start_instances(InstanceIds=self.get_selected_instance_ids())
+
+    def restart_instances(self):
+        self.client.reboot_instances(InstanceIds=self.get_selected_instance_ids())
+
+    def generate_controls(self):
+        btn_actions = QToolButton()
+        btn_actions_menu = QMenu()
+        btn_actions.setPopupMode(QToolButton.MenuButtonPopup)
+        btn_actions.setText('Actions')
+        font = btn_actions.font()
+        font.setPointSize(13)
+        btn_actions.setFont(font)
+        act_networking = QAction('Networking')
+        act_disassociate_eip = QAction('Disassociate Elastic IP')
+        btn_actions_menu.addAction(act_networking)
+        btn_actions_menu.addAction(act_disassociate_eip)
+        btn_actions.setMenu(btn_actions_menu)
+
+
+
+        btn_launch = QPushButton('Launch')
+        btn_start = QPushButton('Start')
+        btn_stop = QPushButton('Stop')
+        btn_restart = QPushButton('Restart')
+
+
+        btn_start.clicked.connect(self.start_instances)
+        btn_stop.clicked.connect(self.stop_instances)
+        btn_restart.clicked.connect(self.restart_instances)
+
+
+        self.resources_actions_bar.addWidget(btn_actions)
+        self.resources_actions_bar.addWidget(btn_launch)
+        self.resources_actions_bar.addWidget(btn_start)
+        self.resources_actions_bar.addWidget(btn_stop)
+        self.resources_actions_bar.addWidget(btn_restart)

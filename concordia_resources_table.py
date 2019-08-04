@@ -34,14 +34,14 @@ class ResourcesTable(QWidget, main_layout):
         # self.scrollAreaWidgetContents.setLayout(self.gridLayout_2)
         self.splitter.setSizes([self.splitter.sizes()[0], 0])
         self.details_layout = None
-        self.details_layout_height = 300
+        self.splitter_sizes = []
         self.resources_table.itemSelectionChanged.connect(self.print_details)
         self.selected_resource = None
         self.sort_field_id = 0
         self.tag_table = None
 
     def on_splitter_size_change(self):
-        self.details_layout_height = self.splitter.sizes()[1]
+        self.splitter_sizes = self.splitter.sizes()
 
     def set_resources_data(self, resources_data, id_field, keys_cache_key=None):
         for resource in resources_data:
@@ -141,8 +141,8 @@ class ResourcesTable(QWidget, main_layout):
         self.tag_table.sortItems(0, Qt.AscendingOrder)
 
     def print_details(self):
-        if len(self.resources_table.selectedItems()) in range(0, len(self.resources_data[0])):
-            self.splitter.setSizes([self.details_layout_height, self.details_layout_height])
+        if len(self.resources_table.selectedItems()) in range(1, len(self.resources_data[0])):
+            self.splitter.setSizes(self.splitter_sizes)
             self.selected_resource = self.resources_data[self.resources_table.selectedItems()[0].row()]
             self.print_resource_details()
             if 'Tags' in self.selected_resource and type(self.selected_resource['Tags']) == list:
@@ -153,9 +153,12 @@ class ResourcesTable(QWidget, main_layout):
     def set_details_layout(self, details_layout_file):
         self.details_layout = uic.loadUi(details_layout_file)
         widget_height = self.details_layout.size().height()
+        tab_header_height = self.tabWidget.tabBar().size().height()
+        tab_widget_height = widget_height + tab_header_height * 2.1
+        self.splitter_sizes = [tab_widget_height, tab_widget_height]
+
         scroll_area = QScrollArea()
         scroll_area.setWidget(self.details_layout)
         scroll_area.setWidgetResizable(True)
         self.tabWidget.addTab(scroll_area, "Description")
-        tab_header_height = self.tabWidget.tabBar().size().height()
-        self.tabWidget.setMaximumHeight(widget_height + tab_header_height * 2)
+        self.tabWidget.setMaximumHeight(tab_widget_height)
