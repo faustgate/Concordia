@@ -63,6 +63,11 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.setWindowTitle("Konkordia")
 
     def on_region_changed(self):
+        cur_service_id = ''
+        cur_tab_index = self.tabWidget.currentIndex()
+        if cur_tab_index >= 0:
+            cur_service_id = self.active_services[cur_tab_index].get_service_entity_id()
+
         cur_creds = self.aws_creds[self.credsSelect.currentIndex()]
         cur_creds['region'] = self.region_ids[self.regionSelect.currentIndex()]
         cur_service = self.services[self.serviceSelect.currentIndex()]
@@ -72,6 +77,8 @@ class ConcordiaMain(QMainWindow, main_layout):
         self.tabWidget.setCurrentIndex(self.tabWidget.addTab(service,
                                                              service.get_name()))
         service.name_changed.connect(self.on_service_name_changed)
+        if cur_service_id is not None and cur_service_id != '':
+            service.load_service_ui(cur_service_id)
 
     def on_service_name_changed(self, new_name):
         self.tabWidget.setTabText(self.tabWidget.currentIndex(), new_name)

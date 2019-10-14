@@ -18,7 +18,7 @@ class RDSInstances(ResourcesTable):
         self.set_hidden_fields(['Endpoint', 'DBSecurityGroups',
                                 'VpcSecurityGroups', 'DBParameterGroups',
                                 'DBSubnetGroup', 'ReadReplicaDBInstanceIdentifiers',
-                                'OptionGroupMemberships', 'DomainMemberships',
+                                'OptionGroupMemberships',
                                 'InstanceCreateTime', 'LatestRestorableTime',
                                 'PendingModifiedValues'])
 
@@ -42,6 +42,7 @@ class RDSInstances(ResourcesTable):
         self.details_layout.instanceIdValue.setText(self.selected_resource['DBInstanceIdentifier'])
 
     def get_aws_resources(self):
+        # response = self.client.describe_db_clusters()
         response = self.client.describe_db_instances()
         self.set_resources_data(response['DBInstances'], 'DBInstanceIdentifier')
 

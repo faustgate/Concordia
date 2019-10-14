@@ -32,6 +32,7 @@ class ConcordiaAWSService(QWidget, splitter_layout):
         self.entities_tree_widget.currentItemChanged.connect(self.on_new_service_entity_selected)
         self.service_entity = None
         self.service_entity_name = None
+        self.service_entity_id = None
         self.refresher = QTimer()
         self.refresher.timeout.connect(self.refresh_info)
 
@@ -73,21 +74,27 @@ class ConcordiaAWSService(QWidget, splitter_layout):
                 self.find_service_entity_class(value, service_entity_name)
 
     def on_new_service_entity_selected(self, current_service_entity):
+        self.service_entity_name = current_service_entity.text(0)
         try:
             self.find_service_entity_class(self.service_entities_tree,
                                            current_service_entity.text(0))
         except Found as exc:
-            self.service_entity = utils.get_class_object(exc.args[0])(self.aws_creds, self.statusbar)
-            if self.splitter.widget(1) is not None:
-                self.splitter.widget(1).setParent(None)
-            self.splitter.insertWidget(1, self.service_entity)
-            Thread(target=self.service_entity.refresh_main_table).start()
-            if not self.refresher.isActive():
-                self.start_refresher()
-            self.service_entity_name = current_service_entity.text(0)
-            self.name_changed.emit(self.get_name())
-        except AttributeError:
-            pass
+            service_entity_id = exc.args[0]
+            self.load_service_ui(service_entity_id)
+
+    def load_service_ui(self, service_entity_id):
+        self.service_entity_id = service_entity_id
+        self.service_entity = utils.get_class_object(service_entity_id)(self.aws_creds, self.statusbar)
+        if self.splitter.widget(1) is not None:
+            self.splitter.widget(1).setParent(None)
+        self.splitter.insertWidget(1, self.service_entity)
+        Thread(target=self.service_entity.refresh_main_table).start()
+        if not self.refresher.isActive():
+            self.start_refresher()
+        self.name_changed.emit(self.get_name())
+
+    def get_service_entity_id(self):
+        return self.service_entity_id
 
     def refresh_info(self):
         if self.service_entity is not None:
